@@ -6,7 +6,7 @@
     if it does not exist, create it and set its role. If it does exist, set the password,
     Description and verify the account is readonly.
 .AUTHOR
-	Bob Trasatti - 12/21/2017
+	Renato Regalado
 .CHANGE DATE
 	11/06/2018
 .CHANGED BY
