@@ -6,13 +6,16 @@
     if it does not exist, create it and set its role. If it does exist, set the password,
     Description and verify the account is readonly.
 .AUTHOR
-	Renato Regalado
+	Bob Trasatti - 12/21/2017
 .CHANGE DATE
 	11/06/2018
 .CHANGED BY
-	Renato Reglado
+	Renato Reglado 12/26/2018
 .CHANGELOG
 	updated the module configuration so that it imports vmware.powercli, the latest powercli module.
+	added instructions for loading the powercli module.
+.NOTES
+	If you see anything between two curley brackets {{example}}  that means is a descriptor and you need to supply the correct information.
 #>
 Param (
 	[Parameter(Mandatory = $True, Position = 0)]
@@ -24,8 +27,10 @@ Param (
 	)
 
 $ErrorActionPreference = "STOP"
+
+#There are two ways to load the VMware PowerCli snapin and it depends on the powershell version. #
+#if your version of powershell is 5.1 or above uncomment the following command.
 #Load the VMWare powerCLI snapins.
-& 'C:\Program Files (x86)\VMware\Infrastructure\PowerCLI\Scripts\Initialize-PowerCLIEnvironment.ps1'
 #$powerCLIModule = get-module -listavailable | where {$_.Name -eq 'VMware.PowerCLI'}
 #if($powerCLIModule){
 #import-module VMware.PowerCLI
@@ -33,10 +38,14 @@ $ErrorActionPreference = "STOP"
 #else {
 #install-module VMware.PowerCLI
 #import-module VMware.PowerCLI
+
 #}
+#_____________________________________________________________________________________________________#
+#if your version of powershell is below 5.1, then you need to install the powercli app from vmware and run it from there.
+
 #LogicMonitor Account Info
 $accountName = "RoAcct"
-$accountPswd = "{{RoAcct Password}}"
+$accountPswd = "{{account Password}}"
 $accountDescription = "Logic Monitor Account"
 
 #Skip the SSL check
