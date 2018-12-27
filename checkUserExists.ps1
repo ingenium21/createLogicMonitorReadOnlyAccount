@@ -47,7 +47,7 @@ if($VIServer)
     #Loop through each host
     foreach($esx in $esxlist){
         Write-Host "checking users for host: $esx"
-		$ESXiServer = Connect-VIServer -Server $esx -User root -Password 'B!u3b1rd13'
+		$ESXiServer = Connect-VIServer -Server $esx -User root -Password '{{root password}}'
 		$accounts = get-vmHostAccount -server $ESXiServer -errorAction silentlyContinue
 		write-host $accounts
 }
