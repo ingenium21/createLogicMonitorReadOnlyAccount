@@ -35,7 +35,7 @@ Set-PowerCLIConfiguration -InvalidCertificateAction:Ignore -WebOperationTimeoutS
 
 #Connect to vCenter
 Write-Host "Connecting to VCenter Server"
-$global:VIServer = Connect-VIServer -server $vCenter -Protocol https -User $vCenterUser -Password $vCenterPass
+$global:VIServer = Connect-VIServer -server $vCenter -Protocol https #-User $vCenterUser -Password $vCenterPass
 
 if($VIServer)
 {
