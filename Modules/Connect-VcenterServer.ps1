@@ -5,4 +5,3 @@ Function Connect-VcenterServer {
 
 }
 
-blah blah
