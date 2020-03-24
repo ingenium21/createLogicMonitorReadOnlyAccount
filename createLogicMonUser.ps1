@@ -41,8 +41,8 @@ Param (
 $ErrorActionPreference = "STOP"
 
 #import all modules in the modules folder
-$modules = Get-ChildItem .\Modules
-Import-module $modules
+. .\Modules\install-powercli.ps1
+. .\Modules\New-ReadOnlyUser.ps1
 
 #load install-powercli module
 install-powercli
@@ -81,12 +81,14 @@ if($VIServer)
 		$ESXiServer = Connect-VIServer -Server $esx -Credential $rootCred
 		if ($ESXiServer)
 		{
-	        New-ReadOnlyUser($ROAcctName, $ROAcctPass, $accountDescription, $ESXiServer)
-	        }
+			$rootFolder = Get-Folder -Name *root -Server $ESXiServer
+			New-ReadOnlyUser -ROAcctName $ROAcctName -ROAcctPass $ROAcctPass -accountDescription $accountDescription -rootFolder $rootFolder -ESXIServer $ESXiServer
 			Disconnect-VIServer -Server $ESXiServer -Confirm:$false
-		}else {
+		}
+		else {
 			Write-Host "Unable to connect to host: $esx" -ForegroundColor Red -BackgroundColor Black
 		}
+	}
 }
 else
 {
