@@ -23,33 +23,22 @@ Param (
 	[Parameter(Mandatory = $False, Position = 1)]
 	[string]$vCenterUser,
 	[Parameter(Mandatory = $False, Position = 2)]
-	[string]$vCenterPass
+	[string]$vCenterPass,
+	[Parameter(Mandatory = $True, position = 3)]
+	[String]$ROAcctName = "RoAcct",
+	[Parameter(Mandatory = $True, position = 4)]
+	[SecureString]$ROAcctPass
 	)
 
 $ErrorActionPreference = "STOP"
 
-#There are two ways to load the VMware PowerCli snapin and it depends on the powershell version. #
-#if your version of powershell is 5.1 or above uncomment the following command.
-#Load the VMWare powerCLI snapins.
-#$powerCLIModule = get-module -listavailable | where {$_.Name -eq 'VMware.PowerCLI'}
-#if($powerCLIModule){
-#import-module VMware.PowerCLI
-#}
-#else {
-#install-module VMware.PowerCLI
-#import-module VMware.PowerCLI
-
-#}
-#_____________________________________________________________________________________________________#
-#if your version of powershell is below 5.1, then you need to install the powercli app from vmware and run it from there.
+#load install-powercli module
+. .\Modules\install-powercli.ps1
+install-powercli
 
 #LogicMonitor Account Info
-$accountName = "RoAcct"
-$accountPswd = "{{account Password}}"
 $accountDescription = "Logic Monitor Account"
 
-#Skip the SSL check
-Set-PowerCLIConfiguration -InvalidCertificateAction:Ignore -WebOperationTimeoutSeconds -1 -Confirm:$false | Out-Null
 
 #Connect to vCenter
 Write-Host "Connecting to VCenter Server"
@@ -71,11 +60,11 @@ if($VIServer)
 	        $rootFolder = Get-Folder -Name *root -Server $ESXiServer
 	        $account = $null
 	        Try{
-	            $account = Get-VMHostAccount -Id $accountName -Server $ESXiServer -ErrorAction Stop 
-	            if($account -ne $null)
+	            $account = Get-VMHostAccount -Id $ROAcctName -Server $ESXiServer -ErrorAction Stop 
+	            if($null -ne $account)
 	            {
 	                #Validate the password and description is set correctly
-	                Set-VMHostAccount -UserAccount $account -Password $accountPswd -Description $accountDescription -Server $ESXiServer | Out-Null
+	                Set-VMHostAccount -UserAccount $account -Password $ROAcctPass -Description $accountDescription -Server $ESXiServer | Out-Null
 	                $permission = Get-VIPermission -Entity $rootFolder -Principal $account -Server $ESXiServer
 	                if($permission -ne "ReadOnly")
 	                {
@@ -84,7 +73,7 @@ if($VIServer)
 	            }
 	        }
 	        Catch{
-	            $account = New-VMHostAccount -Server $ESXiServer -Id $accountName -Password $accountPswd -Description $accountDescription -UserAccount -GrantShellAccess
+	            $account = New-VMHostAccount -Server $ESXiServer -Id $ROAcctName -Password $ROAcctPass -Description $accountDescription -UserAccount -GrantShellAccess
 	            New-VIPermission -Entity $rootFolder -Principal $account -Role "ReadOnly" -Server $ESXiServer | Out-Null
 	        }
 			Disconnect-VIServer -Server $ESXiServer -Confirm:$false
